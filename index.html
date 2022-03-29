@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 250px;
+            font-size: 20px;
+            color: #999;
+            transition: all .3s;
+        }
+
+        .img-list {
+            position: relative;
+            width: 1360px;
+            margin: 0 auto;
+        }
+
+        .img-box {
+            position: absolute;
+        }
+
+        .img-box img {
+            width: 100%;
+            height: 100%;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="wrap">
+    <div class="loading">loading...</div>
+    <div class="img-list"></div>
+</div>
+
+<script src="data.js"></script>
+<script>
+    const prefix = 'https://cdn3-banquan.ituchong.com/weilinew/ml/'
+    const rowTotalWidth = 1360
+    const rowBaseHeight = 300
+    const gap = 10
+
+    let loading = true
+    let rowList = []
+    let curIndex = 0
+    let totalHeight = 0
+
+    function init() {
+        list.forEach(i => {
+            const ratio = i.width / i.height
+            i.src = prefix + i.image_id + '.webp'
+            i.ratio = i.width / i.height
+            i.baseWidth = rowBaseHeight * ratio
+            i.baseHeight = rowBaseHeight
+        })
+
+        while (curIndex < list.length - 1) {
+            const curRowWidth = rowList.reduce((acc, i) => acc + i.baseWidth, 0)
+            if (curRowWidth + list[curIndex + 1].baseWidth <= rowTotalWidth) {
+                rowList.push(list[curIndex + 1])
+                curIndex++
+            } else {
+                appendRow(rowList.slice(0))
+                rowList = []
+            }
+        }
+    }
+
+    function appendRow(rowList) {
+        const rowGapWidth = (rowList.length - 2) * gap
+        const totalWidth = rowList.reduce((acc, i) => acc + i.baseWidth, 0)
+        const curRatio = totalWidth / rowBaseHeight
+        const realRowHeight = (rowTotalWidth - rowGapWidth) / curRatio
+
+        rowList.forEach(item => {
+            item.realHeight = realRowHeight
+            item.realWidth = realRowHeight * item.ratio
+        })
+
+        let left = 0
+        rowList.forEach((item, index) => {
+            item.left = left + index * gap
+            item.top = totalHeight + gap
+            createImgNode(item)
+            left = left + item.realWidth
+        })
+        totalHeight += realRowHeight + gap
+    }
+
+    function createImgNode(imgItem) {
+        const boxElem = document.createElement('div')
+        const imgElem = document.createElement('img')
+
+        imgElem.src = imgItem.src
+
+        boxElem.appendChild(imgElem)
+
+        boxElem.className = 'img-box'
+        boxElem.style.width = imgItem.realWidth + 'px'
+        boxElem.style.height = imgItem.realHeight + 'px'
+        boxElem.style.top = imgItem.top + 'px'
+        boxElem.style.left = imgItem.left + 'px'
+
+        const listElem = document.querySelector('.img-list')
+        listElem.appendChild(boxElem)
+    }
+
+
+    setTimeout(() => {
+        const loadingElem = document.querySelector('.loading')
+        loadingElem.style.display = 'none'
+
+        init()
+    }, 500)
+
+</script>
+</body>
+</html>
