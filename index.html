@@ -23,7 +23,6 @@
 
         .img-list {
             position: relative;
-            width: 1360px;
             margin: 0 auto;
         }
 
@@ -48,24 +47,27 @@
 <script src="data.js"></script>
 <script>
     const prefix = 'https://cdn3-banquan.ituchong.com/weilinew/ml/'
-    const rowTotalWidth = 1360
     const rowBaseHeight = 300
     const gap = 10
 
-    let loading = true
+    let rowTotalWidth = window.innerWidth - 60
     let rowList = []
     let curIndex = 0
     let totalHeight = 0
 
-    function init() {
-        list.forEach(i => {
-            const ratio = i.width / i.height
-            i.src = prefix + i.image_id + '.webp'
-            i.ratio = i.width / i.height
-            i.baseWidth = rowBaseHeight * ratio
-            i.baseHeight = rowBaseHeight
-        })
 
+    list.forEach(i => {
+        const ratio = i.width / i.height
+        i.src = prefix + i.image_id + '.webp'
+        i.ratio = i.width / i.height
+        i.baseWidth = rowBaseHeight * ratio
+        i.baseHeight = rowBaseHeight
+    })
+
+    function init() {
+        const listElem = document.querySelector('.img-list')
+        rowTotalWidth = window.innerWidth - 80
+        listElem.style.width = rowTotalWidth + 'px'
         while (curIndex < list.length - 1) {
             const curRowWidth = rowList.reduce((acc, i) => acc + i.baseWidth, 0)
             if (curRowWidth + list[curIndex + 1].baseWidth <= rowTotalWidth) {
@@ -116,7 +118,6 @@
         const listElem = document.querySelector('.img-list')
         listElem.appendChild(boxElem)
     }
-
 
     setTimeout(() => {
         const loadingElem = document.querySelector('.loading')
