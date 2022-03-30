@@ -66,9 +66,10 @@
 
     function init() {
         const listElem = document.querySelector('.img-list')
-        rowTotalWidth = window.innerWidth - 80
+        rowTotalWidth = window.innerWidth > 600 ? window.innerWidth - 80 : 600
         listElem.style.width = rowTotalWidth + 'px'
         while (curIndex < list.length - 1) {
+            console.log('curindex', curIndex)
             const curRowWidth = rowList.reduce((acc, i) => acc + i.baseWidth, 0)
             if (curRowWidth + list[curIndex + 1].baseWidth <= rowTotalWidth) {
                 rowList.push(list[curIndex + 1])
